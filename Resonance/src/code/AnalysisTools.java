@@ -6,7 +6,9 @@ import java.awt.event.ActionEvent;
 
 import java.awt.event.ActionListener;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.FileReader;
 
 import java.io.File;
 
@@ -32,6 +34,12 @@ public class AnalysisTools {
 	double b,m;
 	long initialTime, previousTime;
 	Timer countdown;
+	ArrayList<Double> baselineX;
+
+	ArrayList<Double> baselineY;
+
+	int currentBaselineIndex;
+	
 	
 	final int RESOLUTION = 100;
 	final double MAX_FREQUENCY = 2000;
@@ -103,7 +111,19 @@ public class AnalysisTools {
 			double actualTime = previousTime+timeSlope*i;
 //			System.out.println(timeSlope);
 			double frequency = Math.pow(10, m*(actualTime-initialTime) + b);
-			double volume = Math.abs((int)y[i]);
+			while(frequency > baselineX.get(currentBaselineIndex)){
+
+				currentBaselineIndex++;
+
+				} 
+				currentBaselineIndex--;
+
+
+				double volume = Math.abs((int)y[i]) / interpolate(baselineY.get(currentBaselineIndex+1), 
+
+				baselineY.get(currentBaselineIndex), baselineX.get(currentBaselineIndex+1), 
+
+				baselineX.get(currentBaselineIndex), frequency);
 			if(frequency>MAX_FREQUENCY){
 				endData();
 			} else {
@@ -114,9 +134,42 @@ public class AnalysisTools {
 		previousTime = time;
 		
 	}
+	
+	public double interpolate(double y1, double y2, double x1, double x2, double xc){
+
+		int counter = 0;
+
+		while(y1==0){
+
+		y1=baselineY.get(currentBaselineIndex)-(++counter);
+
+		}
+
+
+		int counter2 = 0;
+
+
+		while(y2==0){
+
+		y2=baselineY.get(currentBaselineIndex)+(++counter);
+
+		}
+
+		double result = ((y2-y1)/(x2-x1))*(xc-x1)+y1; 
+
+		if (result<0){
+
+		System.out.println(y1+":"+y2+":"+x1+":"+x2+":"+xc);
+
+		}
+
+		return result;
+		}
 
 	private void setup(){
 		acceptingData = true;
+		baselineX = new ArrayList<Double>();
+		baselineY = new ArrayList<Double>();
 		X = new ArrayList<Double>();
 		Y = new ArrayList<Double>();
 		maxX = Double.MIN_VALUE;
@@ -124,6 +177,47 @@ public class AnalysisTools {
 		firstByte = true;
 		m = (Math.log10(MAX_FREQUENCY) - Math.log10(MIN_FREQUENCY)) / DURATION;
 		b = Math.log10(MIN_FREQUENCY);
+		try {
+
+			String content = "";
+
+			File file = new File("res/data.txt");
+
+			FileReader fr = new FileReader(file.getAbsoluteFile());
+
+			BufferedReader br = new BufferedReader(fr);
+
+			String next = "";
+
+			int space = 0;
+
+			double nextFreq = 0.0;
+
+			double nextVolume = 0.0;
+
+			int counter = 0;
+
+			while(!((next=br.readLine())==null)){
+
+			space = next.indexOf(" ");
+
+			nextFreq = Double.valueOf(next.substring(0, space-1));
+
+			baselineX.add(counter,nextFreq);
+
+			nextVolume = Double.valueOf(next.substring(space+1, next.length()-1));
+
+			baselineY.add(counter, nextVolume);
+			counter++;
+			}
+
+			br.close();
+
+			} catch (Exception e) {
+
+			e.printStackTrace();
+
+			}
 		countdown = new Timer((int)(DURATION*1.3), new ActionListener () {
 			@Override
 			public void actionPerformed(ActionEvent e) {

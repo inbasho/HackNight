@@ -101,8 +101,8 @@ public class OutputFrame extends JFrame{
 		graphGraphics.setColor(Color.BLACK);
 		int freqLoc = getFrequencyPixels(freq);
 		int decibelLoc = getDecibelPixels(decibel);	
-		((Graphics2D) graphGraphics).setStroke(new BasicStroke(3));
-        ((Graphics2D) graphGraphics).draw(new Line2D.Float(previousFrequencyLocation, previousDecibelLocation, freqLoc, decibelLoc));
+//		((Graphics2D) graphGraphics).setStroke(new BasicStroke(3));
+//        ((Graphics2D) graphGraphics).draw(new Line2D.Float(previousFrequencyLocation, previousDecibelLocation, freqLoc, decibelLoc));
 
 //		Polygon graphSegment = new Polygon();		
 //		graphSegment.addPoint(previousFrequencyLocation,previousDecibelLocation);
@@ -113,7 +113,7 @@ public class OutputFrame extends JFrame{
 //		graphGraphics.drawImage(gradient,0,0,null);
 //		graphGraphics.fillPolygon(graphSegment);
 		
-//		graphGraphics.fillRect(getFrequencyPixels(freq),getDecibelPixels(decibel),pointSize, pointSize);
+		graphGraphics.fillRect(getFrequencyPixels(freq),getDecibelPixels(decibel),2, 2);
 		previousFrequencyLocation = freqLoc;
 		previousDecibelLocation = decibelLoc;
 	}
