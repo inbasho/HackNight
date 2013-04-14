@@ -54,7 +54,7 @@ ArrayList<Double> baselineY;
 
 int currentBaselineIndex;
 
-final int RESOLUTION = 25;
+final int RESOLUTION = 5;
 
 final double MAX_FREQUENCY = 2000;
 
@@ -64,7 +64,7 @@ final double DURATION = 30*1000;
 
 int timesCalled;
 
-final int averageThreshold = 800;
+final int averageThreshold = 2000;
 
 ArrayList<Double> movingAverageX;
 
@@ -83,14 +83,14 @@ setup();
  
 
 private void endData(){
-
+System.out.println("STAOP");
 acceptingData = false;
-//ArrayList<Point> res = findResonance();
-//for(Point p : res){
-//	frame.drawMaxima(p.getX(), p.getY());
-//	System.out.println(p.getX() + " " + p.getY());
-//	
-//}
+ArrayList<Point> res = findResonance();
+for(Point p : res){
+	frame.drawMaxima(p.getX(), p.getY());
+	System.out.println(p.getX() + " " + p.getY());
+	
+}
 }
 
  
@@ -98,73 +98,110 @@ acceptingData = false;
 
 
  
+//
+//private void newDatum(double x, double y){
+//
+//if(!acceptingData) return;
+//
+//timesCalled++;
+//
+//X.add(x);
+//
+//Y.add(y);
+//
+//if(x>maxX) maxX = x;
+//
+//if(y>maxY) maxY = y;
+//
+//frame.enterData(x,y);
+//
+// 
+//
+//if(timesCalled%averageThreshold==0){
+//
+////calculate moving average
+//
+//double averageX = 0;
+//
+//int size = X.size();
+//
+//for(int i=0; i<averageThreshold; i++){
+//	
+//	if(X.get(size-i-1)<.01) X.set(size-i-1, .01);
+//
+//
+//	averageX +=(X.get(size-i-1)/averageThreshold);
+//
+//}
+//
+// 
+//
+//double averageY = 0;
+//
+//size = Y.size();
+//
+//for(int i=0; i<averageThreshold; i++){
+//	
+//	if(Y.get(size-i-1)<.01) Y.set(size-i-1, .01);
+//
+//	averageY +=(Y.get(size-i-1)/averageThreshold);
+//
+//}
+//
+// 
+//
+//movingAverageX.add(averageX);
+//
+//movingAverageY.add(averageY);
+//
+// 
+//
+//frame.enterAverage(averageX, averageY); 
+//
+// 
+//
+//}//end if 
+//
+//}
+//
+// 
+
 
 private void newDatum(double x, double y){
-
-if(!acceptingData) return;
-
-timesCalled++;
-
-X.add(x);
-
-Y.add(y);
-
-if(x>maxX) maxX = x;
-
-if(y>maxY) maxY = y;
-
-frame.enterData(x,y);
-
- 
-
-if(timesCalled%averageThreshold==0){
-
-//calculate moving average
-
-double averageX = 0;
-
-int size = X.size();
-
-for(int i=0; i<averageThreshold; i++){
+	if(!acceptingData) return;
+	timesCalled++;
+	X.add(x);
+	Y.add(y);
+	if(x>maxX) maxX = x;
+	if(y>maxY) maxY = y;
+	frame.enterData(x,y);
 	
-	if(X.get(size-i-1)<.01) X.set(size-i-1, .01);
+	if(x<.07*MAX_FREQUENCY) return;
+	if(averageThreshold>X.size()) return;
+	if(!(timesCalled%5==0)) return;
 
-
-	averageX +=(X.get(size-i-1)/averageThreshold);
-
+	double averageX = 0;
+	int size = X.size();
+	for(int i=1; i<averageThreshold; i++){
+		if(X.get(size-i-1)<.01) X.set(size-i-1, .1);
+		averageX +=(X.get(size-i-1)/averageThreshold);
+	}
+		
+	double averageY = 0;
+	size = Y.size();
+	for(int i=1; i<averageThreshold; i++){
+		if(Y.get(size-i-1)<.01) Y.set(size-i-1, .1);
+		averageY +=(Y.get(size-i-1)/averageThreshold);
+	}
+		
+	movingAverageX.add(averageX);
+	movingAverageY.add(averageY);
+		
+	frame.enterAverage(averageX, averageY);	
+		
 }
 
- 
 
-double averageY = 0;
-
-size = Y.size();
-
-for(int i=0; i<averageThreshold; i++){
-	
-	if(Y.get(size-i-1)<.01) Y.set(size-i-1, .01);
-
-	averageY +=(Y.get(size-i-1)/averageThreshold);
-
-}
-
- 
-
-movingAverageX.add(averageX);
-
-movingAverageY.add(averageY);
-
- 
-
-frame.enterAverage(averageX, averageY); 
-
- 
-
-}//end if 
-
-}
-
- 
 
 public void writeDataTo(String filename){
 
@@ -305,7 +342,7 @@ double succeedingAngle = (Math.abs(succeedingSlope)/succeedingSlope)*Math.atan(s
 
 if(preceedingAngle>0){
 
-if(preceedingAngle-succeedingAngle > 100/180*Math.PI){
+if(preceedingAngle-succeedingAngle > (80/180)*Math.PI){
 
 Point p = new Point();
 
