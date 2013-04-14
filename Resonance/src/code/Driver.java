@@ -77,7 +77,7 @@ public class Driver {
 				}
 			});
 		timer.start();
-		frame.drawMaxima(800, 20);
+//		frame.drawMaxima(800, 20);
 	}
 	public static void main(String[] args){
 		new Driver();

@@ -19,6 +19,7 @@ import javax.swing.JFrame;
 public class OutputFrame extends JFrame{
 
 	private BufferedImage graph;
+
 	private Graphics graphGraphics;
 	private final int leftLabelSize = 100;
 	private final int bottomLabelSize = 100;
@@ -29,9 +30,7 @@ public class OutputFrame extends JFrame{
 	private final int pointSize = 10;
 	private final int maximaOvalSize = 50;
 	private final int markerLength = 20;
-	
-	private BufferedImage gradient;
-	
+		
 	private int previousFrequencyLocation;
 	private int previousDecibelLocation;
 	
@@ -71,34 +70,44 @@ public class OutputFrame extends JFrame{
 	
 	private void drawBackground(){
 		
-		graphGraphics.setColor(Color.WHITE);
+		graphGraphics.setColor(Color.DARK_GRAY);
 		graphGraphics.fillRect(0, 0, windowSizeX, windowSizeY+50);
 		graphGraphics.setColor(Color.BLACK);
 		((Graphics2D) graphGraphics).setStroke(new BasicStroke(5));
         ((Graphics2D) graphGraphics).draw(new Line2D.Float(leftLabelSize-3, windowSizeY - bottomLabelSize+3, windowSizeX, windowSizeY - bottomLabelSize+3));
         ((Graphics2D) graphGraphics).draw(new Line2D.Float(leftLabelSize-3, windowSizeY - bottomLabelSize+3, leftLabelSize-3, 0));
+
+		drawGraphMarkers();
 		graphGraphics.drawLine(0+leftLabelSize, windowSizeY - bottomLabelSize, windowSizeX, windowSizeY - bottomLabelSize);
 		graphGraphics.drawLine(0+leftLabelSize, windowSizeY - bottomLabelSize, 0+leftLabelSize, 0);
-		graphGraphics.fillRect(0, 0, 10, 10);
-		gradient= null;
-		try {
-		    gradient = ImageIO.read(new File("res/gradient.jpg"));
-		} catch (IOException e) {
-			System.out.println("image loading error");
-		}
-		drawGraphMarkers();
+
 	}
 	
 	private void drawGraphMarkers(){
-		drawFrequencyMarker(1046);
+		drawFrequencyMarker(150);
+		drawFrequencyMarker(300);
+		drawFrequencyMarker(500);
+		drawFrequencyMarker(1000);
+		drawFrequencyMarker(2000);
+		
+		drawMinorFrequencyMarker(200);
+		drawMinorFrequencyMarker(400);
+		drawMinorFrequencyMarker(600);
+		drawMinorFrequencyMarker(700);
+		drawMinorFrequencyMarker(800);
+		drawMinorFrequencyMarker(900);
+		drawDecibelMarker(.001);
+		drawDecibelMarker(.01);
+		drawDecibelMarker(.1);
 		drawDecibelMarker(1);
+		drawDecibelMarker(10);
         graphGraphics.setFont(new Font("Arial", Font.BOLD, 40));
-        graphGraphics.drawString("FREQUENCY", 500, graphSizeY+90);
+        graphGraphics.drawString("AMPLITUDE VS FREQUENCY", 500, graphSizeY+90);
 		
 		
 	}
 	public void enterData(double freq, double decibel){
-		graphGraphics.setColor(Color.BLACK);
+		graphGraphics.setColor(Color.ORANGE);
 		int freqLoc = getFrequencyPixels(freq);
 		int decibelLoc = getDecibelPixels(decibel);	
 //		((Graphics2D) graphGraphics).setStroke(new BasicStroke(3));
@@ -142,23 +151,57 @@ public class OutputFrame extends JFrame{
         ((Graphics2D) graphGraphics).draw(new Line2D.Float(getFrequencyPixels(frequency), graphSizeY, getFrequencyPixels(frequency), graphSizeY + markerLength));
         graphGraphics.setFont(new Font("Arial", Font.BOLD, 20));
         graphGraphics.drawString((int)frequency+ " hz", getFrequencyPixels(frequency), graphSizeY+40);
-//		graphGraphics.drawLine(getFrequencyPixels(frequency), graphSizeY, getFrequencyPixels(frequency), graphSizeY + markerLength);
+        ((Graphics2D) graphGraphics).setStroke(new BasicStroke(1));
+        graphGraphics.setColor(Color.LIGHT_GRAY);
+        ((Graphics2D) graphGraphics).draw(new Line2D.Float(getFrequencyPixels(frequency), graphSizeY, getFrequencyPixels(frequency), 0));
+        graphGraphics.setColor(Color.BLACK);
 	}
+	private void drawMinorFrequencyMarker(double frequency){
+//		System.out.println(getFrequencyPixels(frequency) + " ");
+		((Graphics2D) graphGraphics).setStroke(new BasicStroke(2));
+        ((Graphics2D) graphGraphics).draw(new Line2D.Float(getFrequencyPixels(frequency), graphSizeY, getFrequencyPixels(frequency), graphSizeY + markerLength));
+        graphGraphics.setFont(new Font("Arial", Font.BOLD, 20));
+        graphGraphics.drawString((int)frequency+ " hz", getFrequencyPixels(frequency), graphSizeY+40);
+        ((Graphics2D) graphGraphics).setStroke(new BasicStroke(1));
+        graphGraphics.setColor(Color.LIGHT_GRAY);
+        ((Graphics2D) graphGraphics).draw(new Line2D.Float(getFrequencyPixels(frequency), graphSizeY, getFrequencyPixels(frequency), 0));
+        graphGraphics.setColor(Color.BLACK);
+	}
+	
 	private void drawDecibelMarker(double decibel){
 		((Graphics2D) graphGraphics).setStroke(new BasicStroke(5));
         ((Graphics2D) graphGraphics).draw(new Line2D.Float(leftLabelSize, getDecibelPixels(decibel), leftLabelSize - markerLength, getDecibelPixels(decibel)));
         graphGraphics.setFont(new Font("Arial", Font.BOLD, 20));
-        graphGraphics.drawString(decibel+ " dB", leftLabelSize-90, getDecibelPixels(decibel));
+        graphGraphics.drawString(decibel+"", leftLabelSize-90, getDecibelPixels(decibel));
+        graphGraphics.setFont(new Font("Arial", Font.PLAIN, 20));
+        graphGraphics.drawString("dB", leftLabelSize-90, getDecibelPixels(decibel)+30);
+        ((Graphics2D) graphGraphics).setStroke(new BasicStroke(1));
+        graphGraphics.setColor(Color.LIGHT_GRAY);
+        ((Graphics2D) graphGraphics).draw(new Line2D.Float(leftLabelSize,getDecibelPixels(decibel), windowSizeX, getDecibelPixels(decibel)));
+        graphGraphics.setColor(Color.BLACK);
+	}
+	
+	public void enterAverage(double averageX, double averageY){
+		graphGraphics.setColor(Color.BLUE);
+//		int freqLoc = getFrequencyPixels(averageX);
+//		int decibelLoc = getDecibelPixels(averageY);	
+//		((Graphics2D) graphGraphics).setStroke(new BasicStroke(2));
+//        ((Graphics2D) graphGraphics).draw(new Line2D.Float(previousFrequencyLocation, previousDecibelLocation, freqLoc, decibelLoc));
+//		previousFrequencyLocation = freqLoc;
+//		previousDecibelLocation = decibelLoc;
 		
+		graphGraphics.fillOval(getFrequencyPixels(averageX)-5, getDecibelPixels(averageY)+5, 10, 10);
 	}
 	
 	public void drawMaxima(double freq, double decibel){
+		((Graphics2D) graphGraphics).setStroke(new BasicStroke(2));
 	graphGraphics.drawOval(getFrequencyPixels(freq)-maximaOvalSize/2, getDecibelPixels(decibel)-maximaOvalSize/2, maximaOvalSize, maximaOvalSize);	
 	}
 	
 	@Override
 	public void paint(Graphics g){
 		g.drawImage(graph, 0, 0, null);
+
 	}
 	
 }
