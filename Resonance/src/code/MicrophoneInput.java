@@ -38,8 +38,7 @@ import javax.sound.sampled.TargetDataLine;
        if ((numBytesRead = line.read(data, 0, bufferLengthInBytes)) == -1) {  
          break;  
        }
-       System.out.println(numBytesRead);
-       at.addByte(System.currentTimeMillis(),data[1]);
+       at.addByte(System.currentTimeMillis(),data);
 //       System.out.println(volume);
 //       System.out.println(data[0] + " : " + data[1]);
      }  
@@ -54,22 +53,7 @@ import javax.sound.sampled.TargetDataLine;
      } catch (final IOException ex) {  
        ex.printStackTrace();  
      }  
-     // load bytes into the audio input stream for playback  
-     final byte audioBytes[] = out.toByteArray();  
-     final ByteArrayInputStream bais = new ByteArrayInputStream(audioBytes);  
-     audioInputStream = new AudioInputStream(bais, format, 
-                audioBytes.length / frameSizeInBytes);  
-     final long milliseconds = (long) ((audioInputStream.getFrameLength()  
-                     * 1000) / format.getFrameRate());  
-     duration = milliseconds / 1000.0;  
-     System.out.println(duration);  
-     try {  
-       audioInputStream.reset();  
-       System.out.println("resetting...");  
-     } catch (final Exception ex) {  
-       ex.printStackTrace();  
-       return;  
-     }  
+
    }  
    private TargetDataLine getTargetDataLineForRecord() {  
      TargetDataLine line;
