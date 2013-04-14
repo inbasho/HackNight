@@ -129,6 +129,7 @@ public class AnalysisTools {
 			public void actionPerformed(ActionEvent e) {
 				endData();
 				writeDataTo("res/baseline.txt");
+				countdown.stop();
 			}
 		});
 	}
